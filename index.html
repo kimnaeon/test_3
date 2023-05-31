@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>body {padding: 0; margin: 0;}</style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+    <script>
+        let cx,cy;
+        let permissionGranted = false;
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+  
+            if (typeof(DeviceOrientationEvent) =='undefined' && typeof(DiviceOrientationEvent.requestPermission)==='function') {
+    
+                DiviceOrientationEvent.requestPermission()
+                .catch(() => {
+                let button=createButton("click to allow access to sensors");
+                button.style("font-size", "24px");
+                button.center();
+                button.mousePressed(requestAccess);
+            })
+            .then(() => {
+            permissionGranted = true;
+            })
+            }
+            else{
+                text("Non ios device",windowWidth*0.5,windowHeight*0.5);
+                textSize(28);
+            }
+        }
+
+        function requestAccess() {
+            DeviceOrientationEvent.requestPermission()
+            .then(response => {
+            if (response =='granted'){
+                permissionGranted=true;
+            } else {
+                permissionGranted=false;
+             }
+            })
+        .catch(console.error);
+  
+        this.remove();
+        }
+
+        function draw() {
+            if (!permissionGranted) return;
+  
+            //rotationX, rotationY
+            const dx = constrain(rotateY,-3,3);
+            const dy = constrain(rotateX,-3,3);
+            cx += dx+2;
+            cy += dy+2;
+            cx = constrain(cx,0,width);
+            cy = constrain(cy,0,height);
+  
+            ellipse(cx,cy,200,200);
+        }
+    </script>
+</body>
+</html>
